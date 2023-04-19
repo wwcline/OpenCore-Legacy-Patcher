@@ -326,7 +326,7 @@ class GenerateDefaults:
             # Rebuild it once you are on the host
             return
 
-        if not utilities.check_kext_loaded("AMFIPass", self.constants.detected_os):
+        if not utilities.check_kext_loaded("AMFIPass"):
             # Rebuild EFI and reboot
             return
 
