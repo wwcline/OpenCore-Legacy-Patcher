@@ -58,8 +58,14 @@ class SystemPatchDictionary():
 
         self.os_major:              int = os_major
         self.os_minor:              int = os_minor
+        self.os_float:            float = float(f"{self.os_major}.{self.os_minor}")
         self.non_metal_os_support: list = non_metal_os_support
         self.patchset_dict:        dict = {}
+
+        # XNU Kernel versions
+        self.macOS_12_0_B7:       float = 21.1
+        self.macOS_12_4:          float = 21.5
+        self.macOS_12_5:          float = 21.6
 
         self._generate_sys_patch_dict()
 
@@ -135,8 +141,9 @@ class SystemPatchDictionary():
                     },
                     "Processes": {
                         # 'When Space Allows' option introduced in 12.4 (XNU 21.5)
-                        **({"defaults write /Library/Preferences/.GlobalPreferences.plist ShowDate -int 1": True } if os_data.os_conversion.is_os_newer(os_data.os_data.monterey, 4, self.os_major, self.os_minor) else {}),
+                        **({"defaults write /Library/Preferences/.GlobalPreferences.plist ShowDate -int 1": True } if self.os_float >= self.macOS_12_4 else {}),
                         "defaults write /Library/Preferences/.GlobalPreferences.plist InternalDebugUseGPUProcessForCanvasRenderingEnabled -bool false": True,
+                        "defaults write /Library/Preferences/.GlobalPreferences.plist WebKitExperimentalUseGPUProcessForCanvasRenderingEnabled -bool false": True,
                     },
                 },
                 "Non-Metal IOAccelerator Common": {
@@ -538,7 +545,7 @@ class SystemPatchDictionary():
                             "NVDANV50HalTesla.kext":       "10.13.6",
                             "NVDAResmanTesla.kext":        "10.13.6",
                             # Apple dropped NVDAStartup in 12.0 Beta 7 (XNU 21.1)
-                            **({ "NVDAStartup.kext":       "12.0 Beta 6" } if os_data.os_conversion.is_os_newer(os_data.os_data.monterey, 0, self.os_major, self.os_minor) else {})
+                            **({ "NVDAStartup.kext":       "12.0 Beta 6" } if self.os_float >= self.macOS_12_0_B7 else {})
                         },
                     },
                 },
@@ -569,7 +576,7 @@ class SystemPatchDictionary():
                         },
                         "/System/Library/Frameworks": {
                             # XNU 21.6 (macOS 12.5)
-                            **({ "Metal.framework": "12.5 Beta 2"} if (os_data.os_conversion.is_os_newer(os_data.os_data.monterey, 5, self.os_major, self.os_minor) and self.os_major < os_data.os_data.ventura) else {}),
+                            **({ "Metal.framework": "12.5 Beta 2"} if (self.os_float >= self.macOS_12_5 and self.os_major < os_data.os_data.ventura) else {}),
                         },
                         "/System/Library/PrivateFrameworks": {
                             "GPUCompiler.framework": "11.6",
@@ -599,6 +606,10 @@ class SystemPatchDictionary():
                             "GeForceTeslaGAWeb.bundle":       "WebDriver-387.10.10.10.40.140",
                             "GeForceTeslaGLDriverWeb.bundle": "WebDriver-387.10.10.10.40.140",
                             "GeForceTeslaVADriverWeb.bundle": "WebDriver-387.10.10.10.40.140",
+                        },
+                        "/System/Library/PrivateFrameworks": {
+                            # Restore OpenCL by adding missing compiler files
+                            **({ "GPUCompiler.framework": "11.6"} if self.os_major >= os_data.os_data.monterey else {}),
                         },
                     },
                     "Install Non-Root": {
