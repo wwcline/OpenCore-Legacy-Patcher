@@ -67,14 +67,6 @@ class PatchSysVolume:
 
         self.skip_root_kmutil_requirement = self.hardware_details["Settings: Supports Auxiliary Cache"]
 
-    def __del__(self) -> None:
-        """
-        Ensures that each time we're patching, we're using a clean PatcherSupportPkg folder
-        """
-
-        if Path(self.constants.payload_local_binaries_root_path).exists():
-            shutil.rmtree(self.constants.payload_local_binaries_root_path)
-
     def _init_pathing(self, custom_root_mount_path: Path = None, custom_data_mount_path: Path = None) -> None:
         """
         Initializes the pathing for root volume patching
@@ -852,12 +844,6 @@ class PatchSysVolume:
 
         if Path(self.constants.payload_local_binaries_root_path).exists():
             logging.info("- Local PatcherSupportPkg resources available, continuing...")
-            return True
-
-        if Path(self.constants.payload_local_binaries_root_path_zip).exists():
-            logging.info("- Local PatcherSupportPkg resources available, unzipping...")
-            logging.info("- Unzipping binaries...")
-            utilities.process_status(subprocess.run(["ditto", "-V", "-x", "-k", "--sequesterRsrc", "--rsrc", self.constants.payload_local_binaries_root_path_zip, self.constants.payload_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
             return True
 
         logging.info("- PatcherSupportPkg resources missing, Patcher likely corrupted!!!")

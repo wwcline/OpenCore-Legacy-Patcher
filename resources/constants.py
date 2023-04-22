@@ -109,6 +109,7 @@ class Constants:
         # Get resource path
         self.current_path: Path = Path(__file__).parent.parent.resolve()
         self.payload_path: Path = self.current_path / Path("payloads")
+        self.binaries_path: Path = self.current_path / Path("binaries")
 
         # Patcher Settings
         ## Internal settings
@@ -649,11 +650,10 @@ class Constants:
     # Apple Payloads Paths
     @property
     def payload_local_binaries_root_path(self):
-        return self.payload_path / Path("Universal-Binaries")
-
+        return self.binaries_path
     @property
-    def payload_local_binaries_root_path_zip(self):
-        return self.payload_path / Path("Universal-Binaries.zip")
+    def payload_local_binaries_root_path_dmg(self):
+        return self.current_path / Path("Universal-Binaries.dmg")
 
     @property
     def kdk_download_path(self):

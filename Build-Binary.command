@@ -20,7 +20,7 @@ class CreateBinary:
     Library for creating OpenCore-Patcher application
 
     This script's main purpose is to handle the following:
-       - Download external dependancies (ex. PatcherSupportPkg)
+       - Download external dependencies (ex. PatcherSupportPkg)
        - Convert payloads directory into DMG
        - Build Binary via Pyinstaller
        - Patch 'LC_VERSION_MIN_MACOSX' to OS X 10.10
@@ -235,7 +235,7 @@ class CreateBinary:
             "launcher.sh",
             "OC-Patcher-TUI.icns",
             "OC-Patcher.icns",
-            "Universal-Binaries.zip",
+            "Universal-Binaries.dmg",
         ]
 
 
@@ -260,16 +260,19 @@ class CreateBinary:
 
         patcher_support_pkg_version = constants.Constants().patcher_support_pkg_version
         required_resources = [
-            "Universal-Binaries.zip"
+            "Universal-Binaries.dmg"
         ]
 
         print("- Downloading required resources...")
         for resource in required_resources:
-            if Path(f"./payloads/{resource}").exists():
+            if Path(f"{resource}").exists():
                 if self.args.reset_binaries:
                     print(f"  - Removing old {resource}")
+                    # Just to be safe
+                    assert resource, "Resource cannot be empty"
+                    assert resource not in ("/", "."), "Resource cannot be root"
                     rm_output = subprocess.run(
-                        ["rm", "-rf", f"./payloads/{resource}"],
+                        ["rm", "-rf", f"{resource}"],
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE
                     )
                     if rm_output.returncode != 0:
@@ -296,13 +299,6 @@ class CreateBinary:
             if not Path(f"./{resource}").exists():
                 print(f"  - {resource} not found")
                 raise Exception(f"{resource} not found")
-
-            print("  - Moving into payloads")
-            mv_output = subprocess.run(["mv", resource, "./payloads/"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            if mv_output.returncode != 0:
-                print("  - Move failed")
-                print(mv_output.stderr.decode('utf-8'))
-                raise Exception("Move failed")
 
 
     def _generate_payloads_dmg(self):
