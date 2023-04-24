@@ -609,7 +609,7 @@ class DetectRootPatch:
         if self.constants.detected_os < os_data.os_data.big_sur:
             return amfi_detect.AmfiConfigDetectLevel.NO_CHECK
 
-        if not utilities.check_kext_loaded("AMFIPass"):
+        if utilities.check_kext_loaded("AMFIPass"):
             # If AMFIPass is loaded, our binaries will work
             return amfi_detect.AmfiConfigDetectLevel.NO_CHECK
 
