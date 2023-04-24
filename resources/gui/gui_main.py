@@ -1034,6 +1034,8 @@ class wx_python_gui:
                 # See sys_patch_dict.py for more info
                 patch_installed = False
                 for key in oclp_plist_data:
+                    if isinstance(oclp_plist_data[key], bool) or isinstance(oclp_plist_data[key], int):
+                        continue
                     if "Display Name" not in oclp_plist_data[key]:
                         continue
                     if oclp_plist_data[key]["Display Name"] == patch:
