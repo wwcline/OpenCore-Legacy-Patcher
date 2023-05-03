@@ -12,6 +12,7 @@ Once you've installed macOS through OpenCore, you can boot up and go through the
 * Change Patcher settings as you'd like
 * Build OpenCore again
 * Install OpenCore to internal drive
+** If your Mac has a Fusion Drive, the Patcher will present both the SSD (disk 0) and the HDD (disk 1). Install OpenCore to the SSD (disk 0).
 * Reboot holding Option, and select the internal EFI
 
 And voila! No more USB drive required.
